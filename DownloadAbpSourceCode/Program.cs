@@ -27,20 +27,18 @@ namespace DownloadSource
             Console.WriteLine("成功获取 " + list.Count + " 个模块信息，" + freeCount + " 个免费模块，" + proCount + " 个收费模块");
             Console.WriteLine("开始下载模块...");
 
-            // WindowsIdentity windowsIdentity = WindowsIdentity.GetCurrent();
-            // SecurityIdentifier sid = windowsIdentity.User;
-            Console.WriteLine($"请输入Abp用户AccessToken，导航至：C:\\Users\\{Environment.GetEnvironmentVariable("UserName")}\\.abp\\cli\\access-token.bin");
-            string token = Console.ReadLine();
+            string userProfilePath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+            string abpCliPath = Path.Combine(userProfilePath, ".abp", "cli");
+            string tokenFilename = Path.Combine(abpCliPath, "access-token.bin");
+            string token = string.Empty;
 
+            //读取本地目录token
+            if (File.Exists(tokenFilename))
             {
-                //读取本地目录token
-                const string tokenFilename = "access-token.bin";
-                if (File.Exists(tokenFilename))
-                {
-                    Console.WriteLine("尝试读取收费模块下载令牌");
-                    using var sr = new StreamReader(tokenFilename);
-                    token = await sr.ReadToEndAsync();
-                }
+                Console.WriteLine("尝试读取收费模块下载令牌");
+                using var sr = new StreamReader(tokenFilename);
+                token = await sr.ReadToEndAsync();
+                Console.WriteLine("已成功读取Abp用户令牌。");
             }
 
             Console.WriteLine("请输入Abp版本号，例如：8.0.4");
